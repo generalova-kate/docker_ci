@@ -13,9 +13,11 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ARG package_url=https://storage.openvinotoolkit.org/repositories/openvino/packages/2021.2/l_openvino_toolkit_runtime_rhel8_p_2021.2.185.tgz
 ARG TEMP_DIR=/tmp/openvino_installer
 
-WORKDIR ${TEMP_DIR}
 #create the temp_dir
 RUN mkdir ${TEMP_DIR}
+
+WORKDIR ${TEMP_DIR}
+
 # hadolint ignore=DL3020
 ADD ${package_url} ${TEMP_DIR}
 
