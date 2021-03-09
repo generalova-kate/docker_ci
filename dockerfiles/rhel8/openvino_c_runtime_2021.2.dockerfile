@@ -1,6 +1,6 @@
 # Copyright (C) 2019-2021 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
-FROM registry.access.redhat.com/ubi8 AS base
+FROM registry.access.redhat.com/ubi8 AS ov_base
 
 # hadolint ignore=DL3002
 USER root
@@ -8,13 +8,9 @@ WORKDIR /
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
-
 # get product from URL
 ARG package_url=https://storage.openvinotoolkit.org/repositories/openvino/packages/2021.2/l_openvino_toolkit_runtime_rhel8_p_2021.2.185.tgz
 ARG TEMP_DIR=/tmp/openvino_installer
-
-#create the temp_dir
-RUN mkdir ${TEMP_DIR}
 
 WORKDIR ${TEMP_DIR}
 
@@ -36,10 +32,6 @@ RUN tar -xzf "${TEMP_DIR}"/*.tgz && \
     ln --symbolic /opt/intel/openvino_"$OV_BUILD"/ /opt/intel/openvino_"$OV_YEAR" && \
     rm -rf ${INTEL_OPENVINO_DIR}/deployment_tools/tools/workbench && rm -rf ${TEMP_DIR}
 
-
-# -----------------
-FROM registry.access.redhat.com/ubi8 AS ov_base
-
 LABEL name="rhel8_runtime" \
       maintainer="openvino_docker@intel.com" \
       vendor="Intel Corporation" \
@@ -48,20 +40,9 @@ LABEL name="rhel8_runtime" \
       summary="Provides the latest release of Intel(R) Distribution of OpenVINO(TM) toolkit." \
       description="This is the runtime image for Intel(R) Distribution of OpenVINO(TM) toolkit on RHEL UBI 8"
 
-USER root
-WORKDIR /
-
-SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
-
 # Creating user openvino and adding it to group "users"
 RUN useradd -ms /bin/bash -G users openvino && \
     chown openvino -R /home/openvino
-
-RUN mkdir /opt/intel
-
-ENV INTEL_OPENVINO_DIR /opt/intel/openvino
-
-COPY --from=base /opt/intel /opt/intel
 
 ARG LGPL_DEPS="gcc-c++ \
                gtk3"
