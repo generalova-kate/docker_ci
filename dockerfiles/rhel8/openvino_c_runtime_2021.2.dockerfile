@@ -1,6 +1,6 @@
 # Copyright (C) 2019-2021 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
-FROM registry.access.redhat.com/ubi8 AS ov_base
+FROM registry.access.redhat.com/ubi8
 
 # hadolint ignore=DL3002
 USER root
@@ -53,6 +53,7 @@ WORKDIR /thirdparty
 # hadolint ignore=DL3031, DL3033
 RUN yum -y update && rpm -qa --qf "%{name}\n" > base_packages.txt && \
 	yum install -y ${LGPL_DEPS} && \
+	yum install -y gstreamer1 && \
 	if [ "$INSTALL_SOURCES" = "yes" ]; then \
 	    yum install -y yum-utils && \
 		rpm -qa --qf "%{name}\n" > all_packages.txt && \
